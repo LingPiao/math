@@ -30,8 +30,12 @@ public class MathGenApp {
     private JCheckBox ckBr;
     private JButton btnView;
     private JLabel lblStatus;
+    private JCheckBox ckAns;
+
+    private MathTool mathTool = new MathTool();
 
     public MathGenApp() {
+
 
         btnGen.addActionListener(new ActionListener() {
             @Override
@@ -43,9 +47,11 @@ public class MathGenApp {
             @Override
             public void actionPerformed(ActionEvent e) {
                 view.setText("");
-                StringBuilder sb = new StringBuilder("");
-                sb.append(Math.genMath().toString());
-                System.out.println(sb.toString());
+                String[] qs = mathTool.genMath(60);
+                StringBuilder sb = new StringBuilder();
+                sb.append(qs[0]);
+                sb.append("\n=========================答案===============================\n");
+                sb.append(qs[1]);
                 view.setText(sb.toString());
                 lblStatus.setText("");
             }
@@ -59,7 +65,7 @@ public class MathGenApp {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        frame.setTitle("数学练习题生成");
+        frame.setTitle("数学练习题");
         Dimension sizeDim = new Dimension(800, 600);
         frame.setPreferredSize(sizeDim);
         frame.setContentPane(new MathGenApp().frmMain);

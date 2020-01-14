@@ -28,6 +28,12 @@
               <text value="60"/>
             </properties>
           </component>
+          <component id="35b4d" class="javax.swing.JCheckBox" binding="ckAns">
+            <constraints/>
+            <properties>
+              <text value="附答案"/>
+            </properties>
+          </component>
           <component id="238c8" class="javax.swing.JButton" binding="btnView">
             <constraints/>
             <properties>
