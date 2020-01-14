@@ -21,7 +21,7 @@ public class Math {
 
     }
 
-    private static StringBuilder genMath() {
+    public static StringBuilder genMath() {
         operationCnt.clear();
         operationCnt.put(11, 0);
         operationCnt.put(12, 0);

@@ -2,6 +2,8 @@ package com.youyou.math;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class MathGenApp {
     private JPanel frmMain;
@@ -25,6 +27,30 @@ public class MathGenApp {
     private JCheckBox ckDm;
     private JCheckBox ckAm;
     private JCheckBox ckDmod;
+    private JCheckBox ckBr;
+    private JButton btnView;
+    private JLabel lblStatus;
+
+    public MathGenApp() {
+
+        btnGen.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                lblStatus.setText("OK");
+            }
+        });
+        btnView.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.setText("");
+                StringBuilder sb = new StringBuilder("");
+                sb.append(Math.genMath().toString());
+                System.out.println(sb.toString());
+                view.setText(sb.toString());
+                lblStatus.setText("");
+            }
+        });
+    }
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("MathGen");
