@@ -9,6 +9,10 @@ public class MathTool {
         Add(1), Minus(2), Multiply(3), Divide(4), MultAdd(5), MultMinus(6), MultMult(7), DivideAdd(8), DivideMinus(9), AddMinus(10), Mod(11), Brackets(12);
         private int code;
 
+        public int getCode() {
+            return code;
+        }
+
         Type(int code) {
             this.code = code;
         }
@@ -26,20 +30,20 @@ public class MathTool {
         System.out.println(qs[1]);
     }
 
-    private Map<Integer, Integer> getDefaultRate() {
+    public Map<Integer, Integer> getDefaultRate() {
         Map<Integer, Integer> rate = new HashMap<>();
-        rate.put(Type.Add.code, 5);
-        rate.put(Type.Minus.code, 5);
-        rate.put(Type.Multiply.code, 5);
-        rate.put(Type.Divide.code, 5);
-        rate.put(Type.MultAdd.code, 5);
-        rate.put(Type.MultMinus.code, 5);
-        rate.put(Type.MultMult.code, 5);
-        rate.put(Type.DivideAdd.code, 5);
-        rate.put(Type.DivideMinus.code, 5);
-        rate.put(Type.AddMinus.code, 5);
-        rate.put(Type.Mod.code, 5);
-        rate.put(Type.Brackets.code, 5);
+        rate.put(Type.Add.code, 0);
+        rate.put(Type.Minus.code, 0);
+        rate.put(Type.Multiply.code, 0);
+        rate.put(Type.Divide.code, 0);
+        rate.put(Type.MultAdd.code, 0);
+        rate.put(Type.MultMinus.code, 0);
+        rate.put(Type.MultMult.code, 0);
+        rate.put(Type.DivideAdd.code, 0);
+        rate.put(Type.DivideMinus.code, 0);
+        rate.put(Type.AddMinus.code, 0);
+        rate.put(Type.Mod.code, 0);
+        rate.put(Type.Brackets.code, 0);
         return rate;
     }
 
@@ -80,21 +84,57 @@ public class MathTool {
                 sb.append("\n");
                 ans.append("\n");
             }
-            // x
-            if (operationCnt.get(Type.Multiply.code) < rate.get(Type.Multiply.code)) {
-                sb.append(z1).append(" x ").append(z2).append(" = ").append(genTabs(3));
-                ans.append(z1).append(" x ").append(z2).append(" = ").append(z1 * z2).append(genTabs(2));
-                operationCnt.put(Type.Multiply.code, operationCnt.get(Type.Multiply.code) + 1);
-                continue;
-            }
-            //  /
-            if (operationCnt.get(Type.Divide.code) < rate.get(Type.Divide.code)) {
-                if (z1 == 0 || z1 == z2) {
-                    z1 = 2 + r2.nextInt(8);
+            int genCnt = 0;
+            for (int j = 0; j < 4; j++) { //Random order for + - x /
+                if (genCnt % 3 == 0) {
+                    sb.append("\n");
+                    ans.append("\n");
                 }
-                sb.append(z1 * z2).append(" ÷ ").append(z1).append(" = ").append(genTabs(3));
-                ans.append(z1 * z2).append(" ÷ ").append(z1).append(" = ").append(z2).append(genTabs(2));
-                operationCnt.put(Type.Divide.code, operationCnt.get(Type.Divide.code) + 1);
+                // +
+                if (j == 0 && operationCnt.get(Type.Add.code) < rate.get(Type.Add.code)) {
+                    int a = 1 + r1.nextInt(49);
+                    int b = 1 + r2.nextInt(49);
+                    sb.append(a).append(" + ").append(b).append(" = ").append(genTabs(3));
+                    ans.append(a).append(" + ").append(b).append(" =").append(a + b).append(genTabs(2));
+                    operationCnt.put(Type.Add.code, operationCnt.get(Type.Add.code) + 1);
+                    genCnt++;
+                }
+
+                // -
+                if (j == 1 && operationCnt.get(Type.Minus.code) < rate.get(Type.Minus.code)) {
+                    int a = 1 + r1.nextInt(49);
+                    int b = 1 + r2.nextInt(49);
+                    if (a < b) {
+                        int x = a;
+                        a = b; //交换
+                        b = x;
+                    }
+                    sb.append(a).append(" - ").append(b).append(" = ").append(genTabs(3));
+                    ans.append(a).append(" - ").append(b).append(" =").append(a - b).append(genTabs(2));
+                    operationCnt.put(Type.Minus.code, operationCnt.get(Type.Minus.code) + 1);
+                    genCnt++;
+                }
+
+                // x
+                if (j == 2 && operationCnt.get(Type.Multiply.code) < rate.get(Type.Multiply.code)) {
+                    sb.append(z1).append(" x ").append(z2).append(" = ").append(genTabs(3));
+                    ans.append(z1).append(" x ").append(z2).append(" =").append(z1 * z2).append(genTabs(2));
+                    operationCnt.put(Type.Multiply.code, operationCnt.get(Type.Multiply.code) + 1);
+                    genCnt++;
+                }
+                //  /
+                if (j == 3 && operationCnt.get(Type.Divide.code) < rate.get(Type.Divide.code)) {
+                    if (z1 == 0 || z1 == z2) {
+                        z1 = 2 + r2.nextInt(8);
+                    }
+                    sb.append(z1 * z2).append(" ÷ ").append(z1).append(" = ").append(genTabs(3));
+                    ans.append(z1 * z2).append(" ÷ ").append(z1).append(" =").append(z2).append(genTabs(2));
+                    operationCnt.put(Type.Divide.code, operationCnt.get(Type.Divide.code) + 1);
+                    genCnt++;
+                }
+            }
+            if (operationCnt.get(Type.Add.code) < rate.get(Type.Add.code) || operationCnt.get(Type.Minus.code) < rate.get(Type.Minus.code)
+                    || operationCnt.get(Type.Multiply.code) < rate.get(Type.Multiply.code) || operationCnt.get(Type.Divide.code) < rate.get(Type.Divide.code)) {
                 continue;
             }
 
@@ -107,36 +147,15 @@ public class MathTool {
                     x = y;
                     y = t;
                 }
+                if ((x * y + x) % y == 0) {
+                    y = y + 1;
+                }
                 sb.append(x * y + x).append(" ÷ ").append(y).append(" = ").append(genTabs(3));
-                ans.append(x * y + x).append(" ÷ ").append(y).append(" = ").append((x * y + x) / y).append("...").append((x * y + x) % y).append(genTabs(2));
+                ans.append(x * y + x).append(" ÷ ").append(y).append(" =").append((x * y + x) / y).append("...").append((x * y + x) % y).append(genTabs(2));
                 operationCnt.put(Type.Mod.code, operationCnt.get(Type.Mod.code) + 1);
                 continue;
             }
 
-            // +
-            if (operationCnt.get(Type.Add.code) < rate.get(Type.Add.code)) {
-                int a = 1 + r1.nextInt(49);
-                int b = 1 + r2.nextInt(49);
-                sb.append(a).append(" + ").append(b).append(" = ").append(genTabs(3));
-                ans.append(a).append(" + ").append(b).append(" = ").append(a + b).append(genTabs(2));
-                operationCnt.put(Type.Add.code, operationCnt.get(Type.Add.code) + 1);
-                continue;
-            }
-
-            // -
-            if (operationCnt.get(Type.Minus.code) < rate.get(Type.Minus.code)) {
-                int a = 1 + r1.nextInt(49);
-                int b = 1 + r2.nextInt(49);
-                if (a < b) {
-                    int x = a;
-                    a = b; //交换
-                    b = x;
-                }
-                sb.append(a).append(" - ").append(b).append(" = ").append(genTabs(3));
-                ans.append(a).append(" - ").append(b).append(" = ").append(a - b).append(genTabs(2));
-                operationCnt.put(Type.Minus.code, operationCnt.get(Type.Minus.code) + 1);
-                continue;
-            }
 
             // ()
             if (operationCnt.get(Type.Brackets.code) < rate.get(Type.Brackets.code)) {
@@ -149,10 +168,10 @@ public class MathTool {
                 }
                 if (i % 2 == 0) {
                     sb.append(a).append(" - (  )").append(" = ").append(a - b).append(genTabs(3));
-                    ans.append(a).append(" - (").append(b).append(") = ").append(a - b).append(genTabs(2));
+                    ans.append(a).append(" - (").append(b).append(") =").append(a - b).append(genTabs(2));
                 } else {
                     sb.append(a).append(" + (  )").append(" = ").append(a + b).append(genTabs(3));
-                    ans.append(a).append(" + (").append(b).append(") = ").append(a + b).append(genTabs(2));
+                    ans.append(a).append(" + (").append(b).append(") =").append(a + b).append(genTabs(2));
                 }
                 operationCnt.put(Type.Brackets.code, operationCnt.get(Type.Brackets.code) + 1);
                 continue;
@@ -164,7 +183,7 @@ public class MathTool {
                 int y = 2 + r2.nextInt(8);
                 int z = 2 + r2.nextInt(8);
                 sb.append(x).append(" x ").append(y).append(" + ").append(z).append(" = ").append(genTabs(2));
-                ans.append(x).append(" x ").append(y).append(" + ").append(z).append(" = ").append(x * y + z).append(genTabs(2));
+                ans.append(x).append(" x ").append(y).append(" + ").append(z).append(" =").append(x * y + z).append(genTabs(2));
                 operationCnt.put(Type.MultAdd.code, operationCnt.get(Type.MultAdd.code) + 1);
                 continue;
             }
@@ -176,10 +195,10 @@ public class MathTool {
                 int z = 1 + r2.nextInt(49);
                 if (x * y > z) {
                     sb.append(x).append(" x ").append(y).append(" - ").append(z).append(" = ").append(genTabs(2));
-                    ans.append(x).append(" x ").append(y).append(" - ").append(z).append(" = ").append(x * y - z).append(genTabs(2));
+                    ans.append(x).append(" x ").append(y).append(" - ").append(z).append(" =").append(x * y - z).append(genTabs(2));
                 } else {
                     sb.append(z).append(" - ").append(x).append(" x ").append(y).append(" = ").append(genTabs(2));
-                    ans.append(z).append(" - ").append(x).append(" x ").append(y).append(" = ").append(z - x * y).append(genTabs(2));
+                    ans.append(z).append(" - ").append(x).append(" x ").append(y).append(" =").append(z - x * y).append(genTabs(2));
                 }
                 operationCnt.put(Type.MultMinus.code, operationCnt.get(Type.MultMinus.code) + 1);
                 continue;
@@ -194,7 +213,7 @@ public class MathTool {
                     y = 1 + r2.nextInt(9);
                 }
                 sb.append(x * y).append(" ÷ ").append(y).append(" + ").append(z).append(" = ").append(genTabs(2));
-                ans.append(x * y).append(" ÷ ").append(y).append(" + ").append(z).append(" = ").append(x + z).append(genTabs(2));
+                ans.append(x * y).append(" ÷ ").append(y).append(" + ").append(z).append(" =").append(x + z).append(genTabs(2));
                 operationCnt.put(Type.DivideAdd.code, operationCnt.get(Type.DivideAdd.code) + 1);
                 continue;
             }
@@ -206,10 +225,10 @@ public class MathTool {
                 int z = 1 + r2.nextInt(49);
                 if (x > z) {
                     sb.append(x * y).append(" ÷ ").append(y).append(" - ").append(z).append(" = ").append(genTabs(2));
-                    ans.append(x * y).append(" ÷ ").append(y).append(" - ").append(z).append(" = ").append(x - z).append(genTabs(2));
+                    ans.append(x * y).append(" ÷ ").append(y).append(" - ").append(z).append(" =").append(x - z).append(genTabs(2));
                 } else {
                     sb.append(z).append(" - ").append(x * y).append(" ÷ ").append(y).append(" = ").append(genTabs(2));
-                    ans.append(z).append(" - ").append(x * y).append(" ÷ ").append(y).append(" = ").append(genTabs(2));
+                    ans.append(z).append(" - ").append(x * y).append(" ÷ ").append(y).append(" =").append(z - x / y).append(genTabs(2));
                 }
                 operationCnt.put(Type.DivideMinus.code, operationCnt.get(Type.DivideMinus.code) + 1);
                 continue;
@@ -223,10 +242,10 @@ public class MathTool {
 
                 if ((a + b) > c) {
                     sb.append(a).append(" + ").append(b).append(" - ").append(c).append(" = ").append(genTabs(2));
-                    ans.append(a).append(" + ").append(b).append(" - ").append(c).append(" = ").append(a + b - c).append(genTabs(2));
+                    ans.append(a).append(" + ").append(b).append(" - ").append(c).append(" =").append(a + b - c).append(genTabs(2));
                 } else {
                     sb.append(c).append(" - ").append(a).append(" - ").append(b).append(" = ").append(genTabs(2));
-                    ans.append(c).append(" - ").append(a).append(" - ").append(b).append(" = ").append(c - a - b).append(genTabs(2));
+                    ans.append(c).append(" - ").append(a).append(" - ").append(b).append(" =").append(c - a - b).append(genTabs(2));
                 }
                 operationCnt.put(Type.AddMinus.code, operationCnt.get(Type.AddMinus.code) + 1);
                 continue;
@@ -238,7 +257,7 @@ public class MathTool {
                 int y = 1 + r2.nextInt(3);
                 int z = 2 + r2.nextInt(8);
                 sb.append(x).append(" x ").append(y).append(" x ").append(z).append(" = ").append(genTabs(2));
-                ans.append(x).append(" x ").append(y).append(" x ").append(z).append(" = ").append(x * y * z).append(genTabs(2));
+                ans.append(x).append(" x ").append(y).append(" x ").append(z).append(" =").append(x * y * z).append(genTabs(2));
                 operationCnt.put(Type.MultMult.code, operationCnt.get(Type.MultMult.code) + 1);
                 continue;
             }
