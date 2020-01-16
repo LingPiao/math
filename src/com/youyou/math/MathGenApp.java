@@ -37,6 +37,7 @@ public class MathGenApp {
     private JButton btnView;
     private JLabel lblStatus;
     private JCheckBox ckAns;
+    private JCheckBox ckLess20;
 
 
     private int totalQuestionNum = 0;
@@ -79,11 +80,11 @@ public class MathGenApp {
                 setTotalQuestionNum();
                 Map<Integer, Integer> qstNums = getSelectedTypeAndRate();
                 if (validated) {
-                    String[] qs = mathTool.genMath(totalQuestionNum, qstNums);
+                    String[] qs = mathTool.genMath(totalQuestionNum, qstNums, ckLess20.isSelected());
                     StringBuilder sb = new StringBuilder();
                     sb.append(qs[0]);
                     if (ckAns.isSelected()) {
-                        sb.append("\n=========================答案===============================\n");
+                        sb.append("\n========================================= 答案 =======================================\n");
                         sb.append(qs[1]);
                     }
                     view.setText(sb.toString());
@@ -223,7 +224,7 @@ public class MathGenApp {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        frame.setTitle("数学练习题");
+        frame.setTitle("小学数学练习小帮手");
         Dimension sizeDim = new Dimension(800, 600);
         frame.setPreferredSize(sizeDim);
         frame.setContentPane(new MathGenApp().frmMain);

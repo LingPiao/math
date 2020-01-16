@@ -28,6 +28,12 @@
               <text value="60"/>
             </properties>
           </component>
+          <component id="26c26" class="javax.swing.JCheckBox" binding="ckLess20">
+            <constraints/>
+            <properties>
+              <text value="20以内"/>
+            </properties>
+          </component>
           <component id="35b4d" class="javax.swing.JCheckBox" binding="ckAns">
             <constraints/>
             <properties>
