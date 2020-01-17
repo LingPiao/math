@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +39,8 @@ public class MathGenApp {
     private JButton btnView;
     private JLabel lblStatus;
     private JCheckBox ckAns;
-    private JCheckBox ckLess20;
+    private JComboBox scope;
+    private JLabel lblScope;
 
 
     private int totalQuestionNum = 0;
@@ -45,6 +48,7 @@ public class MathGenApp {
 
     private MathTool mathTool = new MathTool();
     private static Map<String, MathTool.Type> checkBoxNameMap2Type = new HashMap<>();
+    private String[] questionAndAnswers = null;
 
     static {
         checkBoxNameMap2Type.put("加", MathTool.Type.Add);
@@ -63,11 +67,29 @@ public class MathGenApp {
 
     public MathGenApp() {
 
+        scope.addItem("100以内");
+        scope.addItem("20以内");
+        scope.addItem("3位数");
+        scope.addItem("4位数");
+
 
         btnGen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                lblStatus.setText("OK");
+
+                if (questionAndAnswers == null) {
+                    btnView.doClick();
+                    //showMsg("请先预览后再生成打印文档!");
+                    //if (questionAndAnswers == null) return;
+                }
+
+                String fileName = DocUtil.createDoc(questionAndAnswers, ckAns.isSelected());
+                if (fileName != null) {
+                    String msg = "已生成文件： " + fileName;
+                    lblStatus.setText(msg);
+                    questionAndAnswers = null;
+                    showFileMsg(msg, fileName);
+                }
             }
         });
 
@@ -75,17 +97,23 @@ public class MathGenApp {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                questionAndAnswers = null;
                 view.setText("");
+                validated = true;
+                validated = setTotalQuestionNum();
 
-                setTotalQuestionNum();
+                if (!validated) {
+                    return;
+                }
+
                 Map<Integer, Integer> qstNums = getSelectedTypeAndRate();
                 if (validated) {
-                    String[] qs = mathTool.genMath(totalQuestionNum, qstNums, ckLess20.isSelected());
+                    questionAndAnswers = mathTool.genMath(totalQuestionNum, qstNums, scope.getSelectedIndex());
                     StringBuilder sb = new StringBuilder();
-                    sb.append(qs[0]);
+                    sb.append(questionAndAnswers[0]);
                     if (ckAns.isSelected()) {
                         sb.append("\n========================================= 答案 =======================================\n");
-                        sb.append(qs[1]);
+                        sb.append(questionAndAnswers[1]);
                     }
                     view.setText(sb.toString());
                     lblStatus.setText("");
@@ -94,20 +122,40 @@ public class MathGenApp {
         });
     }
 
-    private void setTotalQuestionNum() {
-        if (txtTotalNum.getText().trim().length() < 2) {
-            showMsg("题量应为:10~200 以内的数值!");
+    private boolean setTotalQuestionNum() {
+        if (txtTotalNum.getText().trim().length() < 1) {
+            showMsg("题量应为:1~200 以内的数值!");
+            return false;
         } else {
             try {
                 totalQuestionNum = Integer.parseInt(txtTotalNum.getText().trim());
             } catch (Exception e) {
-                showMsg("题量应为:10~200 以内的数值!");
+                showMsg("题量应为:1~200 以内的数值!");
+                return false;
+            }
+            if (totalQuestionNum < 1 || totalQuestionNum > 200) {
+                showMsg("题量应为:1~200 以内的数值!");
+                return false;
             }
         }
+        return true;
     }
 
     private void showMsg(String msg) {
         JOptionPane.showMessageDialog(frame, msg, "提示", JOptionPane.WARNING_MESSAGE);
+    }
+
+    private void showFileMsg(String msg, String file) {
+        //JOptionPane.showMessageDialog(frame, msg, "提示", JOptionPane.INFORMATION_MESSAGE);
+        int n = JOptionPane.showConfirmDialog(frame, msg + ", 现在打开文件?", "提示", JOptionPane.YES_NO_OPTION);
+        if (n == 0) { //Yes
+            try {
+                Desktop.getDesktop().open(new File(file));
+            } catch (IOException e) {
+                //e.printStackTrace();
+                showMsg("打开文件出错:" + e.getMessage());
+            }
+        }
     }
 
     private Map<Integer, Integer> getSelectedTypeAndRate() {
@@ -218,6 +266,9 @@ public class MathGenApp {
 
 
     public static void main(String[] args) {
+        ImageIcon icon = new ImageIcon("./icon/icon3.png");
+        Dimension sizeDim = new Dimension(800, 600);
+
         frame = new JFrame("MathGen");
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); //Windows Look and feel
@@ -225,9 +276,10 @@ public class MathGenApp {
             e.printStackTrace();
         }
         frame.setTitle("小学数学练习小帮手");
-        Dimension sizeDim = new Dimension(800, 600);
+        frame.setIconImage(icon.getImage());
         frame.setPreferredSize(sizeDim);
         frame.setContentPane(new MathGenApp().frmMain);
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.pack();

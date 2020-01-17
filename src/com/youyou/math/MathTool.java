@@ -72,7 +72,8 @@ public class MathTool {
         return genMath(totalNum, rate);
     }
 
-    public String[] genMath(int totalNum, Map<Integer, Integer> rate, boolean less20) {
+    // 0 - 100以内, 1 - 20以内,2 - 3位数, 3 - 4位数
+    public String[] genMath(int totalNum, Map<Integer, Integer> rate, int scope) {
         cleanAndInitCount();
 
         StringBuilder sb = new StringBuilder("");
@@ -88,6 +89,20 @@ public class MathTool {
             int z1 = 2 + r1.nextInt(8);
             int z2 = 2 + r2.nextInt(8);
 
+            if (scope == 0) {
+                z1 = 1 + r1.nextInt(8);
+                z2 = 1 + r2.nextInt(8);
+            } else if (scope == 1) {
+                z1 = 1 + r1.nextInt(8);
+                z2 = 1 + r2.nextInt(8);
+            } else if (scope == 2) {
+                z1 = 50 + r1.nextInt(49);
+                z2 = 1 + r1.nextInt(9);
+            } else if (scope == 3) {
+                z1 = 50 + r1.nextInt(49);
+                z2 = 50 + r1.nextInt(49);
+            }
+
             if (genCnt % 3 == 0) {
                 sb.append("\n");
                 ans.append("\n");
@@ -98,8 +113,20 @@ public class MathTool {
 
                 // +
                 if (opRand == 1 && operationCnt.get(Type.Add.code) < rate.get(Type.Add.code)) {
-                    int a = 1 + r1.nextInt(less20 ? 14 : 49);
-                    int b = 1 + r2.nextInt(less20 ? 5 : 49);
+                    int a = 1, b = 1;
+                    if (scope == 0) {
+                        a = 1 + r1.nextInt(49);
+                        b = 1 + r2.nextInt(49);
+                    } else if (scope == 1) {
+                        a = 1 + r1.nextInt(14);
+                        b = 1 + r2.nextInt(5);
+                    } else if (scope == 2) {
+                        a = 100 + r1.nextInt(499);
+                        b = 100 + r1.nextInt(499);
+                    } else if (scope == 3) {
+                        a = 1000 + r1.nextInt(7999);
+                        b = 100 + r1.nextInt(199);
+                    }
                     sb.append(a).append(" + ").append(b).append(" = ").append(genTabs(3));
                     ans.append(a).append(" + ").append(b).append(" =").append(a + b).append(genTabs(2));
                     operationCnt.put(Type.Add.code, operationCnt.get(Type.Add.code) + 1);
@@ -110,8 +137,21 @@ public class MathTool {
 
                 // -
                 if (opRand == 2 && operationCnt.get(Type.Minus.code) < rate.get(Type.Minus.code)) {
-                    int a = 1 + r1.nextInt(less20 ? 19 : 49);
-                    int b = 1 + r2.nextInt(less20 ? 9 : 49);
+                    int a = 1, b = 1;
+                    if (scope == 0) {
+                        a = 1 + r1.nextInt(49);
+                        b = 1 + r2.nextInt(49);
+                    } else if (scope == 1) {
+                        a = 1 + r1.nextInt(19);
+                        b = 1 + r2.nextInt(9);
+                    } else if (scope == 2) {
+                        a = 100 + r1.nextInt(499);
+                        b = 100 + r1.nextInt(499);
+                    } else if (scope == 3) {
+                        a = 1000 + r1.nextInt(7999);
+                        b = 100 + r1.nextInt(199);
+                    }
+
                     if (a < b) {
                         int x = a;
                         a = b; //交换
@@ -161,8 +201,21 @@ public class MathTool {
 
             // mod
             if (operationCnt.get(Type.Mod.code) < rate.get(Type.Mod.code)) {
-                int x = 1 + r1.nextInt(9);
-                int y = 1 + r2.nextInt(9);
+                int x = 1, y = 1;
+                if (scope == 0) {
+                    x = 1 + r1.nextInt(9);
+                    y = 1 + r2.nextInt(9);
+                } else if (scope == 1) {
+                    x = 1 + r1.nextInt(9);
+                    y = 1 + r2.nextInt(9);
+                } else if (scope == 2) {
+                    x = 50 + r1.nextInt(49);
+                    y = 50 + r1.nextInt(49);
+                } else if (scope == 3) {
+                    x = 100 + r1.nextInt(899);
+                    y = 50 + r1.nextInt(49);
+                }
+
                 if (x > y) { //x作为余数应该用最小的
                     int t = x; // 交换
                     x = y;
@@ -181,8 +234,21 @@ public class MathTool {
 
             // ()
             if (operationCnt.get(Type.Brackets.code) < rate.get(Type.Brackets.code)) {
-                int a = 1 + r1.nextInt(49);
-                int b = 1 + r2.nextInt(49);
+                int a = 1, b = 1;
+                if (scope == 0) {
+                    a = 1 + r1.nextInt(49);
+                    b = 1 + r2.nextInt(49);
+                } else if (scope == 1) {
+                    a = 1 + r1.nextInt(19);
+                    b = 1 + r2.nextInt(9);
+                } else if (scope == 2) {
+                    a = 100 + r1.nextInt(499);
+                    b = 100 + r1.nextInt(499);
+                } else if (scope == 3) {
+                    a = 500 + r1.nextInt(499);
+                    b = 500 + r1.nextInt(499);
+                }
+
                 if (a < b) {
                     int x = a;
                     a = b; //交换
@@ -202,9 +268,26 @@ public class MathTool {
 
             // x+
             if (operationCnt.get(Type.MultAdd.code) < rate.get(Type.MultAdd.code)) {
-                int x = 2 + r1.nextInt(8);
-                int y = 2 + r2.nextInt(8);
-                int z = 2 + r2.nextInt(8);
+                int x = 2, y = 2, z = 2;
+
+                if (scope == 0) {
+                    x = 2 + r1.nextInt(8);
+                    y = 2 + r2.nextInt(8);
+                    z = 2 + r2.nextInt(8);
+                } else if (scope == 1) {
+                    x = 2 + r1.nextInt(8);
+                    y = 2 + r2.nextInt(8);
+                    z = 2 + r2.nextInt(8);
+                } else if (scope == 2) {
+                    x = 50 + r1.nextInt(49);
+                    y = 50 + r1.nextInt(49);
+                    z = 100 + r2.nextInt(899);
+                } else if (scope == 3) {
+                    x = 50 + r1.nextInt(49);
+                    y = 50 + r1.nextInt(49);
+                    z = 1000 + r2.nextInt(7999);
+                }
+
                 sb.append(x).append(" x ").append(y).append(" + ").append(z).append(" = ").append(genTabs(3));
                 ans.append(x).append(" x ").append(y).append(" + ").append(z).append(" =").append(x * y + z).append(genTabs(2));
                 operationCnt.put(Type.MultAdd.code, operationCnt.get(Type.MultAdd.code) + 1);
@@ -214,9 +297,25 @@ public class MathTool {
 
             // x-, -x
             if (operationCnt.get(Type.MultMinus.code) < rate.get(Type.MultMinus.code)) {
-                int x = 2 + r1.nextInt(8);
-                int y = 2 + r2.nextInt(8);
-                int z = 1 + r2.nextInt(49);
+                int x = 2, y = 2, z = 1;
+                if (scope == 0) {
+                    x = 2 + r1.nextInt(8);
+                    y = 2 + r2.nextInt(8);
+                    z = 2 + r2.nextInt(8);
+                } else if (scope == 1) {
+                    x = 2 + r1.nextInt(8);
+                    y = 2 + r2.nextInt(8);
+                    z = 2 + r2.nextInt(8);
+                } else if (scope == 2) {
+                    x = 50 + r1.nextInt(49);
+                    y = 50 + r1.nextInt(49);
+                    z = 100 + r2.nextInt(899);
+                } else if (scope == 3) {
+                    x = 50 + r1.nextInt(49);
+                    y = 50 + r1.nextInt(49);
+                    z = 1000 + r2.nextInt(7999);
+                }
+
                 if (x * y > z) {
                     sb.append(x).append(" x ").append(y).append(" - ").append(z).append(" = ").append(genTabs(3));
                     ans.append(x).append(" x ").append(y).append(" - ").append(z).append(" =").append(x * y - z).append(genTabs(2));
@@ -231,12 +330,25 @@ public class MathTool {
 
             // ÷+
             if (operationCnt.get(Type.DivideAdd.code) < rate.get(Type.DivideAdd.code)) {
-                int x = 2 + r1.nextInt(8);
-                int y = 2 + r2.nextInt(8);
-                int z = 2 + r2.nextInt(8);
-                if (y == 0) {
-                    y = 1 + r2.nextInt(9);
+                int x = 2, y = 2, z = 1;
+                if (scope == 0) {
+                    x = 2 + r1.nextInt(8);
+                    y = 2 + r2.nextInt(8);
+                    z = 2 + r2.nextInt(8);
+                } else if (scope == 1) {
+                    x = 2 + r1.nextInt(8);
+                    y = 2 + r2.nextInt(8);
+                    z = 2 + r2.nextInt(8);
+                } else if (scope == 2) {
+                    x = 50 + r1.nextInt(49);
+                    y = 50 + r1.nextInt(49);
+                    z = 100 + r2.nextInt(899);
+                } else if (scope == 3) {
+                    x = 50 + r1.nextInt(49);
+                    y = 50 + r1.nextInt(49);
+                    z = 1000 + r2.nextInt(7999);
                 }
+
                 sb.append(x * y).append(" ÷ ").append(y).append(" + ").append(z).append(" = ").append(genTabs(3));
                 ans.append(x * y).append(" ÷ ").append(y).append(" + ").append(z).append(" =").append(x + z).append(genTabs(2));
                 operationCnt.put(Type.DivideAdd.code, operationCnt.get(Type.DivideAdd.code) + 1);
@@ -246,9 +358,24 @@ public class MathTool {
 
             // ÷-, -÷
             if (operationCnt.get(Type.DivideMinus.code) < rate.get(Type.DivideMinus.code)) {
-                int x = 2 + r1.nextInt(8);
-                int y = 2 + r2.nextInt(8);
-                int z = 1 + r2.nextInt(49);
+                int x = 2, y = 2, z = 1;
+                if (scope == 0) {
+                    x = 2 + r1.nextInt(8);
+                    y = 2 + r2.nextInt(8);
+                    z = 2 + r2.nextInt(8);
+                } else if (scope == 1) {
+                    x = 2 + r1.nextInt(8);
+                    y = 2 + r2.nextInt(8);
+                    z = 2 + r2.nextInt(8);
+                } else if (scope == 2) {
+                    x = 50 + r1.nextInt(49);
+                    y = 50 + r1.nextInt(49);
+                    z = 100 + r2.nextInt(899);
+                } else if (scope == 3) {
+                    x = 50 + r1.nextInt(49);
+                    y = 50 + r1.nextInt(49);
+                    z = 1000 + r2.nextInt(7999);
+                }
                 if (x > z) {
                     sb.append(x * y).append(" ÷ ").append(y).append(" - ").append(z).append(" = ").append(genTabs(3));
                     ans.append(x * y).append(" ÷ ").append(y).append(" - ").append(z).append(" =").append(x - z).append(genTabs(2));
@@ -263,9 +390,24 @@ public class MathTool {
 
             // +-, -+, --
             if (operationCnt.get(Type.AddMinus.code) < rate.get(Type.AddMinus.code)) {
-                int a = 2 + r1.nextInt(8);
-                int b = 2 + r2.nextInt(8);
-                int c = 2 + r2.nextInt(48);
+                int a = 1, b = 1, c = 2;
+                if (scope == 0) {
+                    a = 2 + r1.nextInt(49);
+                    b = 2 + r2.nextInt(49);
+                    c = 2 + r2.nextInt(48);
+                } else if (scope == 1) {
+                    a = 2 + r1.nextInt(19);
+                    b = 2 + r2.nextInt(9);
+                    c = 2 + r2.nextInt(9);
+                } else if (scope == 2) {
+                    a = 100 + r1.nextInt(499);
+                    b = 100 + r1.nextInt(499);
+                    c = 100 + r1.nextInt(499);
+                } else if (scope == 3) {
+                    a = 500 + r1.nextInt(499);
+                    b = 500 + r1.nextInt(499);
+                    c = 1000 + r1.nextInt(4999);
+                }
 
                 if ((a + b) > c) {
                     sb.append(a).append(" + ").append(b).append(" - ").append(c).append(" = ").append(genTabs(2));
@@ -281,9 +423,26 @@ public class MathTool {
 
             // xx
             if (operationCnt.get(Type.MultMult.code) < rate.get(Type.MultMult.code)) {
-                int x = 1 + r1.nextInt(3);
-                int y = 1 + r2.nextInt(3);
-                int z = 2 + r2.nextInt(8);
+
+                int x = 2, y = 2, z = 1;
+                if (scope == 0) {
+                    x = 2 + r1.nextInt(3);
+                    y = 2 + r2.nextInt(3);
+                    z = 2 + r2.nextInt(8);
+                } else if (scope == 1) {
+                    x = 2 + r1.nextInt(3);
+                    y = 2 + r2.nextInt(3);
+                    z = 2 + r2.nextInt(8);
+                } else if (scope == 2) {
+                    x = 2 + r1.nextInt(3);
+                    y = 3 + r2.nextInt(5);
+                    z = 10 + r2.nextInt(20);
+                } else if (scope == 3) {
+                    x = 10 + r2.nextInt(20);
+                    y = 10 + r2.nextInt(20);
+                    z = 2 + r2.nextInt(8);
+                }
+
                 sb.append(x).append(" x ").append(y).append(" x ").append(z).append(" = ").append(genTabs(2));
                 ans.append(x).append(" x ").append(y).append(" x ").append(z).append(" =").append(x * y * z).append(genTabs(2));
                 operationCnt.put(Type.MultMult.code, operationCnt.get(Type.MultMult.code) + 1);
