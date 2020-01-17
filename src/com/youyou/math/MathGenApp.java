@@ -275,7 +275,7 @@ public class MathGenApp {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        frame.setTitle("小学数学练习小帮手");
+        frame.setTitle("口算练习小帮手 - To: YouYou ");
         frame.setIconImage(icon.getImage());
         frame.setPreferredSize(sizeDim);
         frame.setContentPane(new MathGenApp().frmMain);
