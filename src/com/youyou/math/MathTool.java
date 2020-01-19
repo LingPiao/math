@@ -224,8 +224,9 @@ public class MathTool {
                 if ((x * y + x) % y == 0) {
                     y = y + 1;
                 }
-                sb.append(x * y + x).append(" ÷ ").append(y).append(" = ").append(genTabs(3));
-                ans.append(x * y + x).append(" ÷ ").append(y).append(" =").append((x * y + x) / y).append("...").append((x * y + x) % y).append(genTabs(2));
+                int mod = x < 2 ? 1 : 1 + r1.nextInt(x - 1);
+                sb.append(x * y + mod).append(" ÷ ").append(y).append(" = ").append(genTabs(3));
+                ans.append(x * y + mod).append(" ÷ ").append(y).append(" =").append((x * y + mod) / y).append("...").append((x * y + mod) % y).append(genTabs(2));
                 operationCnt.put(Type.Mod.code, operationCnt.get(Type.Mod.code) + 1);
                 genCnt++;
                 continue;
