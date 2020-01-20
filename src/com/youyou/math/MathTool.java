@@ -204,7 +204,7 @@ public class MathTool {
                 int x = 1, y = 1;
                 if (scope == 0) {
                     x = 1 + r1.nextInt(9);
-                    y = 1 + r2.nextInt(9);
+                    y = 2 + r2.nextInt(8);
                 } else if (scope == 1) {
                     x = 1 + r1.nextInt(9);
                     y = 1 + r2.nextInt(9);
@@ -216,15 +216,9 @@ public class MathTool {
                     y = 50 + r1.nextInt(49);
                 }
 
-                if (x > y) { //x作为余数应该用最小的
-                    int t = x; // 交换
-                    x = y;
-                    y = t;
-                }
-                if ((x * y + x) % y == 0) {
-                    y = y + 1;
-                }
-                int mod = x < 2 ? 1 : 1 + r1.nextInt(x - 1);
+                int modMax = (x > y ? y : x);
+                int mod = 1 + r1.nextInt(modMax > 1 ? modMax - 1 : modMax);
+
                 sb.append(x * y + mod).append(" ÷ ").append(y).append(" = ").append(genTabs(3));
                 ans.append(x * y + mod).append(" ÷ ").append(y).append(" =").append((x * y + mod) / y).append("...").append((x * y + mod) % y).append(genTabs(2));
                 operationCnt.put(Type.Mod.code, operationCnt.get(Type.Mod.code) + 1);
