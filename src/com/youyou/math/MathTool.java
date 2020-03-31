@@ -1,12 +1,13 @@
 package com.youyou.math;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class MathTool {
     public static enum Type {
-        Add(1), Minus(2), Multiply(3), Divide(4), MultAdd(5), MultMinus(6), MultMult(7), DivideAdd(8), DivideMinus(9), AddMinus(10), Mod(11), Brackets(12);
+        //WholeHd:整10,100加减
+        Add(1), Minus(2), Multiply(3), Divide(4), MultAdd(5), MultMinus(6),
+        MultMult(7), DivideAdd(8), DivideMinus(9), AddMinus(10),
+        Mod(11), Brackets(12), WholeHd(13);
         private int code;
 
         public int getCode() {
@@ -44,6 +45,7 @@ public class MathTool {
         rate.put(Type.AddMinus.code, 0);
         rate.put(Type.Mod.code, 0);
         rate.put(Type.Brackets.code, 0);
+        rate.put(Type.WholeHd.code, 0);
         return rate;
     }
 
@@ -62,6 +64,7 @@ public class MathTool {
         operationCnt.put(Type.AddMinus.code, 0);
         operationCnt.put(Type.Mod.code, 0);
         operationCnt.put(Type.Brackets.code, 0);
+        operationCnt.put(Type.WholeHd.code, 0);
     }
 
     public String[] genMath(int totalNum) {
@@ -70,6 +73,20 @@ public class MathTool {
 
     public String[] genMath(int totalNum, Map<Integer, Integer> rate) {
         return genMath(totalNum, rate);
+    }
+
+    public QA genMathQuestionsAndAnswers(int totalNum, Map<Integer, Integer> rate, int scope) {
+        String[] qa = genMath(totalNum, rate, scope);
+        return new QA(qa[0], qa[1]);
+    }
+
+    public List<QA> genMathQuestionsAndAnswers(int totalNum, Map<Integer, Integer> rate, int scope, int copies) {
+        List<QA> qas = new ArrayList<>();
+        for (int i = 0; i < copies; i++) {
+            String[] qa = genMath(totalNum, rate, scope);
+            qas.add(new QA(qa[0], qa[1]));
+        }
+        return qas;
     }
 
     // 0 - 100以内, 1 - 20以内,2 - 3位数, 3 - 4位数
@@ -109,7 +126,7 @@ public class MathTool {
             }
 
             while (isGenRequired(rate)) {
-                int opRand = 1 + r1.nextInt(4);
+                int opRand = 1 + r1.nextInt(5);
 
                 // +
                 if (opRand == 1 && operationCnt.get(Type.Add.code) < rate.get(Type.Add.code)) {
@@ -182,6 +199,25 @@ public class MathTool {
                     sb.append(z1 * z2).append(" ÷ ").append(z1).append(" = ").append(genTabs(3));
                     ans.append(z1 * z2).append(" ÷ ").append(z1).append(" =").append(z2).append(genTabs(2));
                     operationCnt.put(Type.Divide.code, operationCnt.get(Type.Divide.code) + 1);
+                    genCnt++;
+                    break;
+                }
+
+                //  WholeHD 整10/100加减
+                if (opRand == 5 && operationCnt.get(Type.WholeHd.code) < rate.get(Type.WholeHd.code)) {
+                    int it1 = 100 + r1.nextInt(660);
+                    it1 = it1 - (it1 % 10); //去掉个位
+                    int it2 = 40 + r2.nextInt(200);
+                    it2 = it2 - (it2 % 10); //去掉个位
+                    int op=1+r2.nextInt(2);
+                    if (op == 1) {
+                        sb.append(it1 + it2).append(" - ").append(it1).append(" = ").append(genTabs(2));
+                        ans.append(it1 + it2).append(" - ").append(it1).append(" =").append(it2).append(genTabs(2));
+                    } else {
+                        sb.append(it1).append(" + ").append(it2).append(" = ").append(genTabs(2));
+                        ans.append(it1).append(" + ").append(it2).append(" =").append(it1 + it2).append(genTabs(2));
+                    }
+                    operationCnt.put(Type.WholeHd.code, operationCnt.get(Type.WholeHd.code) + 1);
                     genCnt++;
                     break;
                 }
@@ -405,10 +441,10 @@ public class MathTool {
                 }
 
                 if ((a + b) > c) {
-                    sb.append(a).append(" + ").append(b).append(" - ").append(c).append(" = ").append(genTabs(2));
+                    sb.append(a).append(" + ").append(b).append(" - ").append(c).append(" = ").append(genTabs(3));
                     ans.append(a).append(" + ").append(b).append(" - ").append(c).append(" =").append(a + b - c).append(genTabs(2));
                 } else {
-                    sb.append(c).append(" - ").append(a).append(" - ").append(b).append(" = ").append(genTabs(2));
+                    sb.append(c).append(" - ").append(a).append(" - ").append(b).append(" = ").append(genTabs(3));
                     ans.append(c).append(" - ").append(a).append(" - ").append(b).append(" =").append(c - a - b).append(genTabs(2));
                 }
                 operationCnt.put(Type.AddMinus.code, operationCnt.get(Type.AddMinus.code) + 1);
@@ -451,8 +487,11 @@ public class MathTool {
     }
 
     private boolean isGenRequired(Map<Integer, Integer> rate) {
-        return operationCnt.get(Type.Add.code) < rate.get(Type.Add.code) || operationCnt.get(Type.Minus.code) < rate.get(Type.Minus.code)
-                || operationCnt.get(Type.Multiply.code) < rate.get(Type.Multiply.code) || operationCnt.get(Type.Divide.code) < rate.get(Type.Divide.code);
+        return operationCnt.get(Type.Add.code) < rate.get(Type.Add.code) ||
+                operationCnt.get(Type.Minus.code) < rate.get(Type.Minus.code) ||
+                operationCnt.get(Type.Multiply.code) < rate.get(Type.Multiply.code) ||
+                operationCnt.get(Type.Divide.code) < rate.get(Type.Divide.code) ||
+                operationCnt.get(Type.WholeHd.code) < rate.get(Type.WholeHd.code);
     }
 
 

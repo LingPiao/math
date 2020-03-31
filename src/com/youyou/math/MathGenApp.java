@@ -41,14 +41,18 @@ public class MathGenApp {
     private JCheckBox ckAns;
     private JComboBox scope;
     private JLabel lblScope;
+    private JCheckBox ckWholeHd;
+    private JLabel lblCpy;
+    private JTextField txtCopies;
 
 
     private int totalQuestionNum = 0;
+    private int copies = 1;
     private boolean validated = true;
 
     private MathTool mathTool = new MathTool();
     private static Map<String, MathTool.Type> checkBoxNameMap2Type = new HashMap<>();
-    private String[] questionAndAnswers = null;
+    private java.util.List<QA> mathItems = new ArrayList<>();
 
     static {
         checkBoxNameMap2Type.put("加", MathTool.Type.Add);
@@ -63,6 +67,7 @@ public class MathGenApp {
         checkBoxNameMap2Type.put("加减", MathTool.Type.AddMinus);
         checkBoxNameMap2Type.put("除余", MathTool.Type.Mod);
         checkBoxNameMap2Type.put("括号", MathTool.Type.Brackets);
+        checkBoxNameMap2Type.put("整10加减", MathTool.Type.WholeHd);
     }
 
     public MathGenApp() {
@@ -77,17 +82,17 @@ public class MathGenApp {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                if (questionAndAnswers == null) {
+                if (mathItems == null||mathItems.size()<1) {
                     btnView.doClick();
                     //showMsg("请先预览后再生成打印文档!");
                     //if (questionAndAnswers == null) return;
                 }
 
-                String fileName = DocUtil.createDoc(questionAndAnswers, ckAns.isSelected());
+                String fileName = DocUtil.createDoc(mathItems, ckAns.isSelected());
                 if (fileName != null) {
                     String msg = "已生成文件： " + fileName;
                     lblStatus.setText(msg);
-                    questionAndAnswers = null;
+                    mathItems.clear();
                     showFileMsg(msg, fileName);
                 }
             }
@@ -97,10 +102,9 @@ public class MathGenApp {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                questionAndAnswers = null;
+                mathItems.clear();
                 view.setText("");
-                validated = true;
-                validated = setTotalQuestionNum();
+                validated = validateConf();
 
                 if (!validated) {
                     return;
@@ -108,12 +112,17 @@ public class MathGenApp {
 
                 Map<Integer, Integer> qstNums = getSelectedTypeAndRate();
                 if (validated) {
-                    questionAndAnswers = mathTool.genMath(totalQuestionNum, qstNums, scope.getSelectedIndex());
                     StringBuilder sb = new StringBuilder();
-                    sb.append(questionAndAnswers[0]);
-                    if (ckAns.isSelected()) {
-                        sb.append("\n========================================= 答案 =======================================\n");
-                        sb.append(questionAndAnswers[1]);
+
+                    //mathItems = mathTool.genMath(totalQuestionNum, qstNums, scope.getSelectedIndex());
+                    mathItems = mathTool.genMathQuestionsAndAnswers(totalQuestionNum, qstNums, scope.getSelectedIndex(), copies);
+                    for(int i=0;i<mathItems.size();i++){
+                        sb.append("\n========================================= 口算训练 ").append(i+1).append(" =======================================\n");
+                        sb.append(mathItems.get(i).getQuestions());
+                        if (ckAns.isSelected()) {
+                            sb.append("\n========================================= 答案 =======================================\n");
+                            sb.append(mathItems.get(i).getAnswers());
+                        }
                     }
                     view.setText(sb.toString());
                     lblStatus.setText("");
@@ -121,6 +130,30 @@ public class MathGenApp {
             }
         });
     }
+
+    private boolean validateConf(){
+        return setTotalQuestionNum() && setCopies();
+    }
+
+    private boolean setCopies() {
+        if (txtCopies.getText().trim().length() < 1) {
+            showMsg("份数应为:1~200 以内的数值!");
+            return false;
+        } else {
+            try {
+                copies = Integer.parseInt(txtCopies.getText().trim());
+            } catch (Exception e) {
+                showMsg("份数应为:1~200 以内的数值!");
+                return false;
+            }
+            if (totalQuestionNum < 1 || totalQuestionNum > 200) {
+                showMsg("份数应为:1~200 以内的数值!");
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     private boolean setTotalQuestionNum() {
         if (txtTotalNum.getText().trim().length() < 1) {
@@ -173,6 +206,7 @@ public class MathGenApp {
         allTypes.add(ckAm);
         allTypes.add(ckDmod);
         allTypes.add(ckBr);
+        allTypes.add(ckWholeHd);
 
         java.util.List<JCheckBox> selected = new ArrayList<>();
         for (JCheckBox ck : allTypes) {
@@ -199,10 +233,14 @@ public class MathGenApp {
             expectedNums.put(MathTool.Type.Multiply.getCode(), r1);
             expectedNums.put(MathTool.Type.Divide.getCode(), r1);
 
-            // 1=+, 2=-, 14%
-            int r2 = (int) (totalQuestionNum * 0.07);
+            // 1=+, 2=-, 7%
+            int r2 = (int) (totalQuestionNum * 0.035);
             expectedNums.put(MathTool.Type.Add.getCode(), r2);
             expectedNums.put(MathTool.Type.Minus.getCode(), r2);
+
+            // 1=+, 2=-, 7%
+            int r12 = (int) (totalQuestionNum * 0.07);
+            expectedNums.put(MathTool.Type.WholeHd.getCode(), r12);
 
             // 5=x+, 6=x-, 7=xx, 8=÷+,9=÷-, 10=+-, 11=mod  Rate: 21%, each: 3%
             int r3 = (int) (totalQuestionNum * 0.03);
@@ -218,7 +256,7 @@ public class MathGenApp {
             int r4 = (int) (totalQuestionNum * 0.05);
             expectedNums.put(MathTool.Type.Brackets.getCode(), r4);
 
-            int rest = totalQuestionNum - r1 * 2 - r2 * 2 - r3 * 7 - r4; //余下分别添加
+            int rest = totalQuestionNum - r1 * 2 - r2 * 2 - r3 * 7 - r4- r12; //余下分别添加
             if (rest >= 2) {
                 expectedNums.put(MathTool.Type.Brackets.getCode(), r4 + 2);
                 rest -= 2;
@@ -267,7 +305,7 @@ public class MathGenApp {
 
     public static void main(String[] args) {
         ImageIcon icon = new ImageIcon("./icon/icon3.png");
-        Dimension sizeDim = new Dimension(800, 600);
+        Dimension sizeDim = new Dimension(1024, 800);
 
         frame = new JFrame("MathGen");
         try {

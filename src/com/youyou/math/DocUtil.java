@@ -7,7 +7,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by gk on 2020-01-16.
@@ -22,45 +24,59 @@ public class DocUtil {
         createDoc(new String[]{"8 ÷ 4 = \t\t\t5 x 9 = \t\t\t12 ÷ 3 =\n8 ÷ 4 = \t\t\t5 x 9 = \t\t\t12 ÷ 3 = ", "answers"}, false);
     }
 
+
     public static String createDoc(String[] qNa, boolean isAnswerRequired) {
         if (qNa == null) {
             return null;
         }
+        List<QA> qas = new ArrayList<>();
+        qas.add(new QA(qNa[0], qNa[1]));
+        return createDoc(qas, isAnswerRequired);
+    }
+
+    public static String createDoc(List<QA> qas, boolean isAnswerRequired) {
+        if (qas == null || qas.size()<1) {
+            return null;
+        }
         XWPFDocument doc = new XWPFDocument();
+        int c = 1;
+        for (QA qNa : qas) {
+            if (c > 1) {
+                XWPFParagraph p = doc.createParagraph();
+                p.setPageBreak(true);
+            }
+            XWPFParagraph title = doc.createParagraph();
+            title.setAlignment(ParagraphAlignment.CENTER);
 
+            XWPFRun titleRun = title.createRun();
+            titleRun.setBold(true);
+            titleRun.setFontSize(14);
+            titleRun.setFontFamily("宋体");
+            titleRun.setText("口算训练 " + c++);
 
-        XWPFParagraph title = doc.createParagraph();
-        title.setAlignment(ParagraphAlignment.CENTER);
+            XWPFParagraph questions = doc.createParagraph();
+            questions.setAlignment(ParagraphAlignment.LEFT);
+            // XWPFRun qRun = questions.createRun();
+            //qRun.setText(qNa[0]);
+            bindEnrichedText(qNa.getQuestions(), questions, false);
 
-        XWPFRun titleRun = title.createRun();
-        titleRun.setBold(true);
-        titleRun.setFontSize(14);
-        titleRun.setFontFamily("宋体");
-        titleRun.setText("口算训练");
+            if (isAnswerRequired) {
+                XWPFParagraph p3 = doc.createParagraph();
+                p3.setPageBreak(true);
 
-        XWPFParagraph questions = doc.createParagraph();
-        questions.setAlignment(ParagraphAlignment.LEFT);
-        // XWPFRun qRun = questions.createRun();
-        //qRun.setText(qNa[0]);
-        bindEnrichedText(qNa[0], questions, false);
+                XWPFParagraph p4 = doc.createParagraph();
+                p4.setAlignment(ParagraphAlignment.CENTER);
 
-        if (isAnswerRequired) {
-            XWPFParagraph p3 = doc.createParagraph();
-            p3.setPageBreak(true);
+                XWPFRun r4 = p4.createRun();
+                r4.setBold(true);
+                r4.setFontSize(14);
+                r4.setFontFamily("宋体");
+                r4.setText("答案");
 
-            XWPFParagraph p4 = doc.createParagraph();
-            p4.setAlignment(ParagraphAlignment.CENTER);
-
-            XWPFRun r4 = p4.createRun();
-            r4.setBold(true);
-            r4.setFontSize(14);
-            r4.setFontFamily("宋体");
-            r4.setText("答案");
-
-            XWPFParagraph p5 = doc.createParagraph();
-            p5.setAlignment(ParagraphAlignment.LEFT);
-            bindEnrichedText(qNa[1], p5, true);
-
+                XWPFParagraph p5 = doc.createParagraph();
+                p5.setAlignment(ParagraphAlignment.LEFT);
+                bindEnrichedText(qNa.getAnswers(), p5, true);
+            }
         }
 
         String fileName = new SimpleDateFormat("yyyyMMddHHmm").format(new Date()) + ".docx";
@@ -94,7 +110,7 @@ public class DocUtil {
                 r.setFontFamily("宋体");
                 r.setFontSize(14);
                 r.setText(c);
-                if (c.length() < (12 + tabAdjust)) {
+                if (c.length() < (11 + tabAdjust)) {
                     genTab(r, 3);
                 } else if (c.length() < (16 + tabAdjust)) {
                     genTab(r, 2);
