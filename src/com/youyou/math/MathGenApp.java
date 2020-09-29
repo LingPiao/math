@@ -44,6 +44,7 @@ public class MathGenApp {
     private JCheckBox ckWholeHd;
     private JLabel lblCpy;
     private JTextField txtCopies;
+    private JCheckBox ckRe;
 
 
     private int totalQuestionNum = 0;
@@ -68,6 +69,7 @@ public class MathGenApp {
         checkBoxNameMap2Type.put("除余", MathTool.Type.Mod);
         checkBoxNameMap2Type.put("括号", MathTool.Type.Brackets);
         checkBoxNameMap2Type.put("整10加减", MathTool.Type.WholeHd);
+        checkBoxNameMap2Type.put("递等式", MathTool.Type.RecursionEquation);
     }
 
     public MathGenApp() {
@@ -77,7 +79,24 @@ public class MathGenApp {
         scope.addItem("3位数");
         scope.addItem("4位数");
 
-
+        ckRe.addActionListener((ActionEvent e) -> {
+            if (ckRe.isSelected()) {
+                txtTotalNum.setText("15");
+                ckAdd.setSelected(false);
+                ckMinus.setSelected(false);
+                ckMult.setSelected(false);
+                ckDevide.setSelected(false);
+                ckMa.setSelected(false);
+                ckMm.setSelected(false);
+                ckMmu.setSelected(false);
+                ckDa.setSelected(false);
+                ckDm.setSelected(false);
+                ckAm.setSelected(false);
+                ckDmod.setSelected(false);
+                ckBr.setSelected(false);
+                ckWholeHd.setSelected(false);
+            }
+        });
         btnGen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -207,6 +226,7 @@ public class MathGenApp {
         allTypes.add(ckDmod);
         allTypes.add(ckBr);
         allTypes.add(ckWholeHd);
+        allTypes.add(ckRe);
 
         java.util.List<JCheckBox> selected = new ArrayList<>();
         for (JCheckBox ck : allTypes) {
@@ -238,9 +258,13 @@ public class MathGenApp {
             expectedNums.put(MathTool.Type.Add.getCode(), r2);
             expectedNums.put(MathTool.Type.Minus.getCode(), r2);
 
-            // 1=+, 2=-, 7%
-            int r12 = (int) (totalQuestionNum * 0.07);
+            // 1=+, 2=-, 4%
+            int r12 = (int) (totalQuestionNum * 0.04);
             expectedNums.put(MathTool.Type.WholeHd.getCode(), r12);
+
+            // 递等式, 3%
+            int r13 = (int) (totalQuestionNum * 0.03);
+            expectedNums.put(MathTool.Type.RecursionEquation.getCode(), r13);
 
             // 5=x+, 6=x-, 7=xx, 8=÷+,9=÷-, 10=+-, 11=mod  Rate: 21%, each: 3%
             int r3 = (int) (totalQuestionNum * 0.03);

@@ -126,7 +126,7 @@
         <properties/>
         <border type="etched" title="题型选择:"/>
         <children>
-          <grid id="30124" binding="chkBoxs" layout-manager="GridLayoutManager" row-count="2" column-count="13" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="30124" binding="chkBoxs" layout-manager="GridLayoutManager" row-count="2" column-count="14" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints border-constraint="West"/>
             <properties/>
@@ -252,6 +252,16 @@
                 <properties>
                   <selected value="true"/>
                   <text value="整10加减"/>
+                </properties>
+              </component>
+              <component id="c2ff5" class="javax.swing.JCheckBox" binding="ckRe">
+                <constraints>
+                  <grid row="0" column="13" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <enabled value="true"/>
+                  <selected value="false"/>
+                  <text value="递等式"/>
                 </properties>
               </component>
             </children>

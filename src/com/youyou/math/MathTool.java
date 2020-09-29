@@ -7,7 +7,7 @@ public class MathTool {
         //WholeHd:整10,100加减
         Add(1), Minus(2), Multiply(3), Divide(4), MultAdd(5), MultMinus(6),
         MultMult(7), DivideAdd(8), DivideMinus(9), AddMinus(10),
-        Mod(11), Brackets(12), WholeHd(13);
+        Mod(11), Brackets(12), WholeHd(13), RecursionEquation(14);
         private int code;
 
         public int getCode() {
@@ -46,6 +46,7 @@ public class MathTool {
         rate.put(Type.Mod.code, 0);
         rate.put(Type.Brackets.code, 0);
         rate.put(Type.WholeHd.code, 0);
+        rate.put(Type.RecursionEquation.code, 0);
         return rate;
     }
 
@@ -65,6 +66,7 @@ public class MathTool {
         operationCnt.put(Type.Mod.code, 0);
         operationCnt.put(Type.Brackets.code, 0);
         operationCnt.put(Type.WholeHd.code, 0);
+        operationCnt.put(Type.RecursionEquation.code, 0);
     }
 
     public String[] genMath(int totalNum) {
@@ -122,11 +124,15 @@ public class MathTool {
 
             if (genCnt % 3 == 0) {
                 sb.append("\n");
+                //递等式多空行
+                if (operationCnt.get(Type.RecursionEquation.code) > 0) {
+                    sb.append("\n\n\n\n\n\n\n");
+                }
                 ans.append("\n");
             }
 
             while (isGenRequired(rate)) {
-                int opRand = 1 + r1.nextInt(5);
+                int opRand = 1 + r1.nextInt(6);
 
                 // +
                 if (opRand == 1 && operationCnt.get(Type.Add.code) < rate.get(Type.Add.code)) {
@@ -209,7 +215,7 @@ public class MathTool {
                     it1 = it1 - (it1 % 10); //去掉个位
                     int it2 = 40 + r2.nextInt(200);
                     it2 = it2 - (it2 % 10); //去掉个位
-                    int op=1+r2.nextInt(2);
+                    int op = 1 + r2.nextInt(2);
                     if (op == 1) {
                         sb.append(it1 + it2).append(" - ").append(it1).append(" = ").append(genTabs(2));
                         ans.append(it1 + it2).append(" - ").append(it1).append(" =").append(it2).append(genTabs(2));
@@ -218,6 +224,43 @@ public class MathTool {
                         ans.append(it1).append(" + ").append(it2).append(" =").append(it1 + it2).append(genTabs(2));
                     }
                     operationCnt.put(Type.WholeHd.code, operationCnt.get(Type.WholeHd.code) + 1);
+                    genCnt++;
+                    break;
+                }
+
+                //  递等式
+                if (opRand == 6 && operationCnt.get(Type.RecursionEquation.code) < rate.get(Type.RecursionEquation.code)) {
+
+                    // 19*5 - 27/9 =
+                    // 19*5 + 27/9 =
+
+                    int a = 10 + r1.nextInt(9);
+                    int b = 2 + r2.nextInt(7);
+                    while (a * b >= 100) {
+                        a = 1 + r1.nextInt(18);
+                        b = 2 + r2.nextInt(7);
+                    }
+                    int x = a * b;
+
+                    int c = 2 + r1.nextInt(7);
+                    int d = 2 + r2.nextInt(7);
+                    int y = c * d;
+
+                    int op = 1 + r2.nextInt(2);
+
+                    if (op == 1) {
+                        sb.append(c).append(" x ").append(d).append(" + ").append(x).append(" ÷ ").append(b).append(" = ").append(genTabs(1));
+                        ans.append(c).append(" x ").append(d).append(" + ").append(x).append(" ÷ ").append(b).append(" = ").append(y+a).append(genTabs(1));
+                    } else {
+                        if(a>y) {
+                            sb.append(x).append(" ÷ ").append(b).append(" - ").append(c).append(" x ").append(d).append(" = ").append(genTabs(1));
+                            ans.append(x).append(" ÷ ").append(b).append(" - ").append(c).append(" x ").append(d).append(" = ").append(a - y).append(genTabs(1));
+                        }else{
+                            sb.append(c).append(" x ").append(d).append(" - ").append(x).append(" ÷ ").append(b).append(" = ").append(genTabs(1));
+                            ans.append(c).append(" x ").append(d).append(" - ").append(x).append(" ÷ ").append(b).append(" = ").append(y-a).append(genTabs(1));
+                        }
+                    }
+                    operationCnt.put(Type.RecursionEquation.code, operationCnt.get(Type.RecursionEquation.code) + 1);
                     genCnt++;
                     break;
                 }
@@ -491,7 +534,9 @@ public class MathTool {
                 operationCnt.get(Type.Minus.code) < rate.get(Type.Minus.code) ||
                 operationCnt.get(Type.Multiply.code) < rate.get(Type.Multiply.code) ||
                 operationCnt.get(Type.Divide.code) < rate.get(Type.Divide.code) ||
-                operationCnt.get(Type.WholeHd.code) < rate.get(Type.WholeHd.code);
+                operationCnt.get(Type.WholeHd.code) < rate.get(Type.WholeHd.code) ||
+                operationCnt.get(Type.RecursionEquation.code) < rate.get(Type.RecursionEquation.code)
+                ;
     }
 
 
